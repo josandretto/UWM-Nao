@@ -1,10 +1,8 @@
 To use Python with Nao, install the following: 
 1. Python 2.7, which is available from https://www.python.org/downloads/ 
-2. pynaoqi from https://community.aldebaran.com, but you have to be signed-in with an account connected to a robot to download it. 
+2. pynaoqi from https://community.aldebaran.com. You have to be signed-in with an account connected to a robot to download it. The installer worked fine on Windows 7. FYI, the python sdk for nao does not work on the most recent version of MacOS (10.11)
 
-FYI, the python sdk for nao does not work on the most recent version of MacOS (10.11)
-
-I've also been using OpenCV for vision analysis. This requires installing the following for Python: 
+I've also been using OpenCV for vision analysis. This requires installing the following for Python. See separate files for installing these packages. 
 1. numpy 1.10: available from http://www.numpy.org/. OpenCV will not work if it is an older version of numpy
 2. matplotlib: available from http://matplotlib.org/. This is not required, but this lets you display images, which is nice.
 3. OpenCV for python, which is available at http://opencv-python-tutroals.readthedocs.org/en/latest/py_tutorials/py_setup/py_setup_in_windows/py_setup_in_windows.html.  
