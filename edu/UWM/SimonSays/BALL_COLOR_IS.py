@@ -14,21 +14,22 @@ class NaoShowMeGame(object):
         
         #Get access to Nao's text to speech
         self._tts=ALProxy("ALTextToSpeech",self._IP,9559)
+        
 
         #set which camera to use: top camera=0 bottom camera=1
-        self._camera=0 
+        camera=0 
 
         #set which resolution to get pictures in: kVGA=640x480 pixels
-        self._resolution=vision_definitions.kVGA 
+        resolution=vision_definitions.kVGA 
 
         #set which colorSpace to get images: kRGB is RGB values
-        self._colorSpace=vision_definitions.kRGBColorSpace
+        colorSpace=vision_definitions.kRGBColorSpace
 
         #set framerate: 1-30
-        self._fps=10
+        fps=10
 
         #subscribe to the camera
-        self._cameraClient=self._video.subscribeCamera("detector", self._camera, self._resolution,self._colorSpace,self._fps)
+        self._cameraClient=self._video.subscribeCamera("detector", camera, resolution,colorSpace,fps)
 
         #set width and height of images
         self._imageWidth=640
@@ -52,7 +53,7 @@ class NaoShowMeGame(object):
     def playLoop(self):
         print "entering game loop"
         print "press ctrl+c to stop the program"
-       # green="green"
+         # green="green"
         #toSay="show me the "+green+" ball"
        # self._tts.say(toSay)
         #try:
@@ -101,34 +102,35 @@ class NaoShowMeGame(object):
                 #get the area of all the regions returned by cv2.findContours
                 areas=[cv2.contourArea(c) for c in contours]
                 #get the index of the region with the largest area
-                max_index=np.argmax(areas)
-                #get the contour with the largest area
-                cnt=contours[max_index]
-                
-                if (cv2.contourArea(cnt)>150):
+                if(len(areas)>0):
+                    max_index=np.argmax(areas)
+                    #get the contour with the largest area
+                    cnt=contours[max_index]
                     
-                    if np.all(lower==self._GREEN_LOW):
-                     #   self._tts.say("That is green.")
-                        print("green")
-                    elif np.all(lower==self._PINK_LOW):
-                   #     self._tts.say("Try again. That ball is pink.")
-                        print("pink")
-                    elif np.all(lower==self._PURPLE_LOW):
-                   #     self._tts.say("I think that ball is purple. We're look for a green ball")
-                        print("purple")
-                    elif np.all(lower==self._YELLOW_LOW):
-                   #     self._tts.say("Close, but that ball is yellow.")
-                        print("yellow")
+                    if (cv2.contourArea(cnt)>150):
                         
-                    #get a rectangle that surrounds the contour with the largest area...presumably this will be the object we are looking for
-                    x,y,w,h=cv2.boundingRect(cnt)
+                        if np.all(lower==self._GREEN_LOW):
+                            self._tts.say("That is green.")
+                            print("green")
+                        elif np.all(lower==self._PINK_LOW):
+                            self._tts.say("That ball is pink.")
+                            print("pink")
+                        elif np.all(lower==self._PURPLE_LOW):
+                            self._tts.say("I think that ball is purple.")
+                            print("purple")
+                        elif np.all(lower==self._YELLOW_LOW):
+                            self._tts.say("That ball is yellow.")
+                            print("yellow")
+                            
+                        #get a rectangle that surrounds the contour with the largest area...presumably this will be the object we are looking for
+                        x,y,w,h=cv2.boundingRect(cnt)
 
-                    #draw the rectangle on the original image
-                    cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,0),2)
-                    
-                    #display the image
-                    plt.imshow(image,)
-                    plt.show()
+                        #draw the rectangle on the original image
+                        cv2.rectangle(image,(x,y),(x+w,y+h),(0,255,0),2)
+                        
+                        #display the image
+                        plt.imshow(image,)
+                        plt.show()
         #except KeyboardInterrupt:
           #  print
             #print "Interrupted by user"
@@ -138,6 +140,6 @@ class NaoShowMeGame(object):
         #unsubscribe from the camera
         self._video.unsubscribe(self._cameraClient)
 
-game=NaoShowMeGame("192.168.1.112")
+game=NaoShowMeGame("192.168.1.114")
 game.playLoop()
 game.cleanUp()
