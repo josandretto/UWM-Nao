@@ -1,3 +1,11 @@
+#A variation on BALL_COLOR_IS.py. This version puts my base algorithm into a loop. NOT TESTED!!!!!!!!
+#color filtering based on http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_colorspaces/py_colorspaces.html 
+#and http://www.pyimagesearch.com/2014/08/04/opencv-python-color-detection/
+
+#finding contours in images based on http://docs.opencv.org/trunk/d4/d73/tutorial_py_contours_begin.html#gsc.tab=0
+
+#finding contour with largest area and drawing bounding rectangle based on comment to the follwoing stackoverflow question: http://stackoverflow.com/questions/16538774/dealing-with-contours-and-bounding-rectangle-in-opencv-2-4-python-2-7
+
 import cv2
 import numpy as np
 import sys
@@ -56,6 +64,8 @@ class NaoShowMeGame(ALModule):
         self.playLoop()
         
     def OnHeadFrontTouched(self,key,value,message):
+        #I want to use NAO's tactile sensors on his head to either quit the game or repeat the instructions....for now this just tests 
+        #the code for subscribing to his tactile head sensors works. 
         self.memory.unsubscribeToEvent('FrontTactilTouched','NaoShowMeGame')
         tts.say("My Head Was Touched")
         self.memory.subscribeToEvent('FrontTactilTouched','NaoShowMeGame','OnHeadFrontTouched')
@@ -133,7 +143,9 @@ class NaoShowMeGame(ALModule):
         self._video.unsubscribe(self._cameraClient)
         
 def main (ip,port):
+    #To subscribe to events like when NAO's head sensors are touched, we need to create a ALBroker. 
     myBroker = ALBroker("myBroker","0.0.0.0",0,ip,port)
+    #Create an instance of the game
     global NaoShowMeGame
     NaoShowMeGame = NaoShowMeGame("192.168.1.114")
     try:
