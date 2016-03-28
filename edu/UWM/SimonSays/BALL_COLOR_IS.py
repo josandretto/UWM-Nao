@@ -1,3 +1,12 @@
+#Python program for a Nao Robot to ask to see a certain color object (for now balls) and confirm whether teh correct object was shown
+
+#color filtering based on http://docs.opencv.org/3.0-beta/doc/py_tutorials/py_imgproc/py_colorspaces/py_colorspaces.html 
+#and http://www.pyimagesearch.com/2014/08/04/opencv-python-color-detection/
+
+#finding contours in images based on http://docs.opencv.org/trunk/d4/d73/tutorial_py_contours_begin.html#gsc.tab=0
+
+#finding contour with largest area and drawing bounding rectangle based on comment to the follwoing stackoverflow question: http://stackoverflow.com/questions/16538774/dealing-with-contours-and-bounding-rectangle-in-opencv-2-4-python-2-7
+
 import cv2
 import numpy as np
 import sys
