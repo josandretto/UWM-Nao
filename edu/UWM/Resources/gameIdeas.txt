@@ -1,2 +1,3 @@
 1. Ask to see different colored objects (e.g., balls) and check if the correct colored ball is shown to Nao
 2. Have child hold colored object or where colored bracelet and tell child to move arms and check whether instructions were followed
+3. Have children wear different colored shirts for Nao to identify
