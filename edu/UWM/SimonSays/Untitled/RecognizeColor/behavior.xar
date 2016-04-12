@@ -15,7 +15,7 @@
             <BehaviorLayer name="behavior_layer1">
                 <BehaviorKeyframe name="keyframe1" index="1">
                     <Diagram>
-                        <Box name="Wait" id="8" localization="8" tooltip="Wait a moment before sending a signal on the output. &#x0A;Can be stopped anytime. &#x0A;Stimulating the input again before output is activated restarts the waiting period.&#x0A;" x="422" y="435">
+                        <Box name="Wait" id="8" localization="8" tooltip="Wait a moment before sending a signal on the output. &#x0A;Can be stopped anytime. &#x0A;Stimulating the input again before output is activated restarts the waiting period.&#x0A;" x="416" y="449">
                             <bitmap>media/images/box/wait.png</bitmap>
                             <script language="4">
                                 <content>
@@ -53,11 +53,11 @@
                             <Input name="onStart" type="0" type_size="1" nature="2" inner="0" tooltip="Start the Wait box with the configured timeout value." id="2" />
                             <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Stop the wait and stimulate the output." id="3" />
                             <Output name="timerOutput" type="0" type_size="1" nature="1" inner="0" tooltip="Send a bang once time set in parameters is elapsed, or if the box is stopped and the appropriate parameter is set." id="4" />
-                            <Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="6" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" />
+                            <Parameter name="Timeout (s)" inherits_from_parent="0" content_type="2" value="2" default_value="1" min="0" max="5000" tooltip="Duration the box waits before stimulating the output." id="5" />
                             <Parameter name="Trigger timerOutput if cancelled" inherits_from_parent="0" content_type="0" value="0" default_value="1" tooltip="If the box is currently waiting and cancelled, output will be stimulated." id="6" />
                         </Box>
-                        <Box name="GiveInstruction" id="5" localization="8" tooltip="" x="102" y="436">
-                            <bitmap>media/images/box/box-python-script.png</bitmap>
+                        <Box name="GiveInstruction" id="5" localization="8" tooltip='Nao speaks an instruction, e.g., &quot;Show me the green ball&quot;.' x="237" y="473">
+                            <bitmap>media/images/box/interaction/say.png</bitmap>
                             <script language="4">
                                 <content>
                                     <![CDATA[import random
@@ -67,36 +67,35 @@ class MyClass(GeneratedClass):
         GeneratedClass.__init__(self)
 
     def onLoad(self):
-        #put initialization code here
+        #establish an animated speec proxy to control what Nao says.
         self.animatedSpeechProxy=ALProxy("ALAnimatedSpeech")
 
-        GREEN_LOW=[60,70,70]
-        GREEN_HIGH=[70,255,255]
-        PINK_LOW=[163,100,120]
-        PINK_HIGH=[167,255,255]
+        #establish color thresholds and store in a dictionary
+        GREEN_LOW=[57,152,61]
+        GREEN_HIGH=[69,206,196]
+        PINK_LOW=[149,154,118]
+        PINK_HIGH=[177,246,232]
         RED_LOW=[171,143,0]
         RED_HIGH=[179,255,255]
-        PURPLE_LOW=[117,51,50]
-        PURPLE_HIGH=[128,255,255]
-        YELLOW_LOW=[15,166,50]
-        YELLOW_HIGH=[25,255,255]
-        ORANGE_LOW=[0,152,162]
-        ORANGE_HIGH=[0,179,255]
+        PURPLE_LOW=[105,89,21]
+        PURPLE_HIGH=[172,254,85]
+        YELLOW_LOW=[9,185,97]
+        YELLOW_HIGH=[31,204,251]
+        ORANGE_LOW=[0,209,172]
+        ORANGE_HIGH=[179,237,255]
         NEON_YELLOW_LOW=[9,96,103]
         NEON_YELLOW_HIGH=[41,212,255]
         shapes=('circle','square','rectangle','triangle')
 
-        global objectDict
-        #put all the color ranges into a single list
+        global objectDict #global because python dictionaries cannot be stored in ALMemory
+
         objectDict={'green':(GREEN_LOW,GREEN_HIGH,'ball'),
                     'pink':(PINK_LOW,PINK_HIGH,'ball'),
-                    'purple':(PURPLE_LOW,PURPLE_HIGH,'ball'),
                     'yellow':(YELLOW_LOW,YELLOW_HIGH,'ball'),
                     'orange':(ORANGE_LOW,ORANGE_HIGH,'ball'),
-                    'red':(RED_LOW,RED_HIGH,'ball'),
-                    'neon yellow':(NEON_YELLOW_LOW,NEON_YELLOW_HIGH,'ball')}
+                    'purple':(PURPLE_LOW,PURPLE_HIGH,'ball')}
 
-
+        #create a list of instructions that Nao can say, e.g., show me the green ball.
         self.instructionList=[]
         for k in objectDict.keys():
             self.instructionList.append((k,"Show me the "+k+" "+objectDict[k][2]+"."))
@@ -107,13 +106,17 @@ class MyClass(GeneratedClass):
         pass
 
     def onInput_onStart(self):
-
+        #get one of the instructions from the list. Append "Simon says to some instructions.
         i=random.randint(0,len(self.instructionList)-1)
         simon=['','Simon says ']
         doesSimonSay=random.choice(simon)
 
+        #Make Nao speak the instruction
         toSay=doesSimonSay+self.instructionList[i][1]
         self.animatedSpeechProxy.say(toSay)
+
+        #store the color requested and whether "simon says" used in a tuple
+        #so it can be passed to the next modeule where Nao confirms whether his instruction was followed
         toSend=(self.instructionList[i][0],True if doesSimonSay=='Simon says ' else False)
         self.onStopped(toSend) #activate the output of the box
 
@@ -128,7 +131,7 @@ class MyClass(GeneratedClass):
                             <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
                             <Output name="onStopped" type="0" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
                         </Box>
-                        <Box name="Tactile Head" id="9" localization="8" tooltip="Detect touch on head tactile sensor." x="334" y="19">
+                        <Box name="Tactile Head" id="9" localization="8" tooltip="Detect touch on head tactile sensor." x="425" y="17">
                             <bitmap>media/images/box/sensors/tactileHead.png</bitmap>
                             <script language="4">
                                 <content>
@@ -271,7 +274,7 @@ class MyClass(GeneratedClass):
                             </Timeline>
                             <Resource name="Head-sequence" type="Lock" timeout="0" />
                         </Box>
-                        <Box name="Counter" id="1" localization="-1" tooltip="Represent a counter.&#x0A;&#x0A;Each time the onStart input is stimulated, the counter value is sent on the&#x0A;currentValue output and incremented (or decremented) by Step value, from&#x0A;its Initial value to its Final value set in the parameters. Once the counter value is&#x0A;higher than its Final value, the onReinitialized output is stimulated and&#x0A;the counter is reinitialized to the Initial value.&#x0A;&#x0A;Note: You can also reinitialize the counter by stimulating the onInit&#x0A;input." x="241" y="170">
+                        <Box name="Counter" id="1" localization="-1" tooltip="Represent a counter.&#x0A;&#x0A;Each time the onStart input is stimulated, the counter value is sent on the&#x0A;currentValue output and incremented (or decremented) by Step value, from&#x0A;its Initial value to its Final value set in the parameters. Once the counter value is&#x0A;higher than its Final value, the onReinitialized output is stimulated and&#x0A;the counter is reinitialized to the Initial value.&#x0A;&#x0A;Note: You can also reinitialize the counter by stimulating the onInit&#x0A;input." x="425" y="151">
                             <bitmap>media/images/box/loop.png</bitmap>
                             <script language="4">
                                 <content>
@@ -317,15 +320,16 @@ class MyClass(GeneratedClass):
                             <Output name="onReinitialized" type="1" type_size="1" nature="2" inner="0" tooltip="Stimulated when the loop is over or if the counter has been reinitialized." id="5" />
                             <Parameter name="Initial value" inherits_from_parent="0" content_type="1" value="0" default_value="0" min="0" max="500" tooltip="The initial value of the counter (for the first iteration)." id="6" />
                             <Parameter name="Step value" inherits_from_parent="0" content_type="1" value="1" default_value="1" min="1" max="500" tooltip="The counter value will be incremented or decremented with this value." id="7" />
-                            <Parameter name="Final value" inherits_from_parent="0" content_type="1" value="5" default_value="5" min="0" max="500" tooltip="It is the maximum (if increasing) or the minimum (if decreasing) value of the&#x0A;counter (thus for the last iteration).&#x0A;&#x0A;After this value, if the onStart input is called, the onReinitialized output will be&#x0A;stimulated and the counter will be reinitialized to its Initial value." id="8" />
+                            <Parameter name="Final value" inherits_from_parent="0" content_type="1" value="8" default_value="5" min="0" max="500" tooltip="It is the maximum (if increasing) or the minimum (if decreasing) value of the&#x0A;counter (thus for the last iteration).&#x0A;&#x0A;After this value, if the onStart input is called, the onReinitialized output will be&#x0A;stimulated and the counter will be reinitialized to its Initial value." id="8" />
                         </Box>
-                        <Box name="CheckSimonSays" id="3" localization="8" tooltip="" x="755" y="430">
+                        <Box name="CheckSimonSays" id="3" localization="8" tooltip="" x="581" y="435">
                             <bitmap>media/images/box/box-python-script.png</bitmap>
                             <script language="4">
                                 <content>
                                     <![CDATA[import vision_definitions
 import cv2
 import numpy as np
+import almath
 
 class MyClass(GeneratedClass):
     def __init__(self):
@@ -340,25 +344,26 @@ class MyClass(GeneratedClass):
         fps=10
         #subscribe to the camera
         self._cameraClient=self._video.subscribeCamera("detector", camera, resolution,colorSpace,fps)
+        self.animatedSpeechProxy = ALProxy("ALAnimatedSpeech")
 
         #set width and height of images
         self._imageWidth=640
         self._imageHeight=480
+        self._motionProxy=ALProxy("ALMotion")
 
     def onUnload(self):
         #put clean-up code here
         self._video.unsubscribe(self._cameraClient)
 
     def onInput_onStart(self,color):
-        global objectDict
 
-        self.animatedSpeechProxy = ALProxy("ALTextToSpeech")
         #self.animatedSpeechProxy.say(color[0])
 
         image=None
 
         #get a picture from Nao
         result = self._video.getImageRemote(self._cameraClient)
+        # release image buffer locked by getImageLocal(). Not mandatory for GetImageRemote(), but recommended
         self._video.releaseImage(self._cameraClient)
 
         #make sure a picture is received before processing the image
@@ -371,48 +376,140 @@ class MyClass(GeneratedClass):
                 # the image is a bitstring, so reshape it into a multi-dimensional array with the RGB values of pixel with (x,y)
                 # location at image[x][y]
                 image=np.fromstring(result[6],np.uint8).reshape(480,640,3)
-
-                # release image buffer locked by getImageLocal(). Not mandatory for GetImageRemote(), but recommended
-
-
                 # Convert the image's RGB values to HSV (Hue, Saturation, Value)...at first I used RGB, but read that HSV can work well for filtering
                 im=cv2.cvtColor(image,cv2.COLOR_RGB2HSV)
 
-                lower=objectDict[color[0]][0]
-                upper=objectDict[color[0]][1]
-
-                #convert the HSV values to the correct format
-                lower=np.array(lower,dtype="uint8")
-                upper=np.array(upper,dtype="uint8")
-
-                #create a mask of the image where pixels that value in the range [lower,upper] are white and everything else is black
-                mask=cv2.inRange(im,lower,upper)
-
-                #use dilation and erosion to remove some of the noise in the mask
-                kernel = np.ones((5,5),np.uint8)
-                mask=cv2.dilate(mask,kernel,iterations=1)
-                mask=cv2.erode(mask,kernel,iterations=1)
-
-                #find boundaries between the black and white areas of the mask
-                contours,hierarchy=cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
-                #get the area of all the regions returned by cv2.findContours
-                areas=[cv2.contourArea(c) for c in contours]
-                #get the index of the region with the largest area
-                if(len(areas)>0):
-                    max_index=np.argmax(areas)
-                    #get the contour with the largest area
-                    cnt=contours[max_index]
-
-                    if (cv2.contourArea(cnt)>150) and color[1]:
-                        self.animatedSpeechProxy.say('That is correct! That is the '+color[0]+' '+objectDict[color[0]][2]+".")
-                    elif (cv2.contourArea(cnt)>150):
-                        self.animatedSpeechProxy.say('That is the '+color[0]+' '+objectDict[color[0]][2]+" , but Simon did not say to show me the " + color[0]+' '+objectDict[color[0]][2]+".")
-                    elif color[1]:
-                        self.animatedSpeechProxy.say("Simon asked to see the "+color[0]+' '+objectDict[color[0]][2]+ " but Simon does't see it. Let's try again.")
+                cnt=self.get_largest_contour(im,color[0])
+                responsze=""
+                correct=True
+                if (cnt is not None) and (cv2.contourArea(cnt)>3000):
+                    if color[1]:
+                        response='That is correct! That is the '+color[0]+' '+objectDict[color[0]][2]+"."
                     else:
-                        self.animatedSpeechProxy.say("Great job, I did not say Simon says.")
+                        response='That is the '+color[0]+' '+objectDict[color[0]][2]+" , but Simon did not say to show me the " + color[0]+' '+objectDict[color[0]][2]+"."
+                        correct=False
+                else:
+                    seen_color=list()
+                    for k in objectDict.keys():
+                        tmp_cnt=0
+                        if not k == color[0]:
+                            tmp_cnt=self.get_largest_contour(im,k)
+                            if tmp_cnt is not None and cv2.contourArea(tmp_cnt)>3000:
+                                seen_color.append(k)
+                    colorStr=""
+                    numSeen=len(seen_color)
+                    if numSeen==1:
+                        colorStr=seen_color[0]
+                    elif len(seen_color)>1:
+                        for i in range(0,len(seen_color)):
+                            colorStr=colorStr+', '+seen_color[i]
+                            if i==numSeen-2:
+                                colorStr=colorStr+' and'
+                    if color[1] and numSeen<1:
+                        response="Simon asked to see the "+color[0]+' '+objectDict[color[0]][2]+ " but Simon does't see it. Let's try again."
+                        correct=False
+                    elif numSeen<1 and not color[1]:
+                        response="Great job, I did not say Simon says."
+                    else:
+                        response="Simon asked to see the "+color[0]+' '+objectDict[color[0]][2]+ " but I see "+colorStr+' '+objectDict[color[0]][2]+'s.'if numSeen>1 else "."
+                        correct=False
+                ledProxy=ALProxy("ALLeds")
+                sGroup = "FaceLeds"
+                if correct:
+                    ledProxy.rasta(3.0)
+                else:
+                    ledProxy.fadeRGB(sGroup,"red",3.0)
+                self.animatedSpeechProxy.say(response)
+
             except RuntimeError:
                 self.animatedSpeechProxy.say('There was a problem')
+
+        self.onStopped() #activate the output of the box
+
+
+    def onInput_onStop(self):
+        self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
+        self.onStopped() #activate the output of the box
+
+    def get_largest_contour(self, im, test_color):
+        global objectDict
+
+        lower=objectDict[test_color][0]
+        upper=objectDict[test_color][1]
+
+        #convert the HSV values to the correct format
+        lower=np.array(lower,dtype="uint8")
+        upper=np.array(upper,dtype="uint8")
+
+        #create a mask of the image where pixels that value in the range [lower,upper] are white and everything else is black
+        mask=cv2.inRange(im,lower,upper)
+
+        #use dilation and erosion to remove some of the noise in the mask
+        kernel = np.ones((5,5),np.uint8)
+        mask=cv2.dilate(mask,kernel,iterations=1)
+        mask=cv2.erode(mask,kernel,iterations=1)
+
+        #find boundaries between the black and white areas of the mask
+        contours,hierarchy=cv2.findContours(mask,cv2.RETR_TREE,cv2.CHAIN_APPROX_SIMPLE)
+
+        #get the area of all the regions returned by cv2.findContours
+        areas=[cv2.contourArea(c) for c in contours]
+
+        #get the index of the region with the largest area
+        cnt=None
+        if(len(areas)>0):
+            max_index=np.argmax(areas)
+            #get the contour with the largest area
+            cnt=contours[max_index]
+        return cnt]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="0" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
+                        </Box>
+                        <Box name="LookAhead" id="2" localization="8" tooltip="Makes Nao look ahead to make where he takes a photo predictable. " x="168" y="292">
+                            <bitmap>media/images/box/box-timeLine.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
+                            <Timeline enable="1" fps="25" start_frame="1" end_frame="-1" size="17">
+                                <ActuatorList model="nao">
+                                    <ActuatorCurve name="value" actuator="HeadPitch" recordable="0" mute="0" unit="0">
+                                        <Key frame="17" value="4.3" />
+                                    </ActuatorCurve>
+                                    <ActuatorCurve name="value" actuator="HeadYaw" recordable="0" mute="0" unit="0">
+                                        <Key frame="17" value="11.4235" />
+                                    </ActuatorCurve>
+                                </ActuatorList>
+                            </Timeline>
+                        </Box>
+                        <Box name="turnOffAwareness" id="4" localization="8" tooltip="Nao turns his head to look in the direction of noises. This makes it unpredictable where he will be looking when he takes a photo to confirm if his instructions were followed. Turning off Nao&apos;s basic awareness stops Nao from moving head when he senses events. " x="97" y="61">
+                            <bitmap>media/images/box/tracker/basicawareness.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        #put initialization code here
+        pass
+
+    def onUnload(self):
+        #put clean-up code here
+        pass
+
+    def onInput_onStart(self):
+        basicAwarenessProxy=ALProxy("ALBasicAwareness")
+        basicAwarenessProxy.stopAwareness()
         self.onStopped() #activate the output of the box
 
 
@@ -422,19 +519,144 @@ class MyClass(GeneratedClass):
 </content>
                             </script>
                             <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
-                            <Input name="onStart" type="0" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
                             <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
                             <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
                         </Box>
+                        <Box name="turnOnAwareness" id="6" localization="8" tooltip="Turn basic awareness back on. After executing this box, Nao will again look in the direction of events, like noises." x="771" y="8">
+                            <bitmap>media/images/box/tracker/basicawareness.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self)
+
+    def onLoad(self):
+        #put initialization code here
+        pass
+
+    def onUnload(self):
+        #put clean-up code here
+        pass
+
+    def onInput_onStart(self):
+        basicAwarenessProxy=ALProxy("ALBasicAwareness")
+        basicAwarenessProxy.startAwareness()
+        self.onStopped() #activate the output of the box
+
+
+    def onInput_onStop(self):
+        self.onUnload() #it is recommended to reuse the clean-up as the box is stopped
+        self.onStopped() #activate the output of the box]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Input name="onStop" type="1" type_size="1" nature="3" inner="0" tooltip="Box behavior stops when a signal is received on this input." id="3" />
+                            <Output name="onStopped" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="4" />
+                        </Box>
+                        <Box name="Eye LEDs" id="7" localization="8" tooltip="Set the LED color of the eyes. Note that you must open the box to enter the color." x="689" y="319">
+                            <bitmap>media/images/box/interaction/LED.png</bitmap>
+                            <script language="4">
+                                <content>
+                                    <![CDATA[]]>
+</content>
+                            </script>
+                            <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                            <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="Box behavior starts when a signal is received on this input." id="2" />
+                            <Output name="onDone" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
+                            <Parameter name="Side" inherits_from_parent="0" content_type="3" value="Both" default_value="Both" custom_choice="0" tooltip="Choose the eye where the LED light is set." id="4">
+                                <Choice value="Both" />
+                                <Choice value="Left" />
+                                <Choice value="Right" />
+                            </Parameter>
+                            <Parameter name="Duration (s)" inherits_from_parent="0" content_type="2" value="4.1" default_value="0.1" min="0" max="5" tooltip="Transition&apos;s duration in seconds." id="5" />
+                            <Timeline enable="0">
+                                <BehaviorLayer name="behavior_layer1">
+                                    <BehaviorKeyframe name="keyframe1" index="1">
+                                        <Diagram>
+                                            <Box name="Eyes LEDs" id="15" localization="8" tooltip="Set the color of LEDs of robot&apos;s eyes." x="281" y="41">
+                                                <bitmap>media/images/box/interaction/LED.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[class MyClass(GeneratedClass):
+    def __init__(self):
+        GeneratedClass.__init__(self, False)
+
+    def onLoad(self):
+        self.ids = []
+        self.leds = ALProxy("ALLeds")
+
+    def onUnload(self):
+        #~ puts code for box cleanup here
+        pass
+
+    def onInput_color(self, p):
+        if( self.getParameter("Side") == "Left" ):
+            sGroup = "LeftFaceLeds"
+        elif( self.getParameter("Side") == "Right" ):
+            sGroup = "RightFaceLeds"
+        else:
+            sGroup = "FaceLeds"
+        id = self.leds.post.fadeRGB(sGroup, 256*256*p[0] + 256*p[1] + p[2], self.getParameter("Duration (s)"))
+        self.ids.append(id)
+        self.leds.wait(id, 0)
+        self.ids.remove(id)
+        if( self.ids == [] ):
+            self.onDone() # activate output of the box]]>
+</content>
+                                                </script>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="color" type="2" type_size="3" nature="2" inner="0" tooltip="Color of robot&apos;s eyes." id="2" />
+                                                <Output name="onDone" type="1" type_size="1" nature="1" inner="0" tooltip="Signal sent when box behavior is finished." id="3" />
+                                                <Parameter name="Side" inherits_from_parent="1" content_type="3" value="Both" default_value="Both" custom_choice="0" tooltip="Choose the eye where the LED light is set." id="4">
+                                                    <Choice value="Both" />
+                                                    <Choice value="Left" />
+                                                    <Choice value="Right" />
+                                                </Parameter>
+                                                <Parameter name="Duration (s)" inherits_from_parent="1" content_type="2" value="0.1" default_value="0.1" min="0" max="5" tooltip="Transition&apos;s duration in seconds." id="5" />
+                                            </Box>
+                                            <Box name="Color Edit" id="16" localization="8" tooltip="Transmit a table of number [R,G,B] correponsding to the selected color." plugin="coloredit_plugin" x="105" y="47">
+                                                <bitmap>media/images/box/interaction/vocabulary.png</bitmap>
+                                                <script language="4">
+                                                    <content>
+                                                        <![CDATA[class MyClass(GeneratedClass):
+	def __init__(self):
+		GeneratedClass.__init__(self)
+
+	def onInput_onStart(self):
+		self.onStopped([0, 81, 255])]]>
+</content>
+                                                </script>
+                                                <pluginContent>
+                                                    <color>#0051ff</color>
+                                                </pluginContent>
+                                                <Input name="onLoad" type="1" type_size="1" nature="0" inner="1" tooltip="Signal sent when diagram is loaded." id="1" />
+                                                <Input name="onStart" type="1" type_size="1" nature="2" inner="0" tooltip="To send the color on the output." id="2" />
+                                                <Output name="onStopped" type="2" type_size="3" nature="1" inner="0" tooltip="[R,G,B] with R, G and B between 0 and 255." id="3" />
+                                            </Box>
+                                            <Link inputowner="15" indexofinput="2" outputowner="16" indexofoutput="3" />
+                                            <Link inputowner="16" indexofinput="2" outputowner="0" indexofoutput="2" />
+                                            <Link inputowner="0" indexofinput="3" outputowner="15" indexofoutput="3" />
+                                        </Diagram>
+                                    </BehaviorKeyframe>
+                                </BehaviorLayer>
+                            </Timeline>
+                        </Box>
                         <Link inputowner="8" indexofinput="2" outputowner="5" indexofoutput="4" />
-                        <Link inputowner="0" indexofinput="4" outputowner="9" indexofoutput="8" />
-                        <Link inputowner="0" indexofinput="4" outputowner="9" indexofoutput="9" />
-                        <Link inputowner="0" indexofinput="4" outputowner="9" indexofoutput="10" />
-                        <Link inputowner="5" indexofinput="2" outputowner="1" indexofoutput="4" />
-                        <Link inputowner="0" indexofinput="4" outputowner="1" indexofoutput="5" />
-                        <Link inputowner="1" indexofinput="2" outputowner="0" indexofoutput="2" />
                         <Link inputowner="3" indexofinput="2" outputowner="8" indexofoutput="4" />
-                        <Link inputowner="1" indexofinput="2" outputowner="3" indexofoutput="4" />
+                        <Link inputowner="4" indexofinput="2" outputowner="0" indexofoutput="2" />
+                        <Link inputowner="9" indexofinput="2" outputowner="0" indexofoutput="2" />
+                        <Link inputowner="6" indexofinput="2" outputowner="9" indexofoutput="10" />
+                        <Link inputowner="6" indexofinput="2" outputowner="9" indexofoutput="9" />
+                        <Link inputowner="6" indexofinput="2" outputowner="9" indexofoutput="8" />
+                        <Link inputowner="0" indexofinput="4" outputowner="6" indexofoutput="4" />
+                        <Link inputowner="6" indexofinput="2" outputowner="1" indexofoutput="5" />
+                        <Link inputowner="2" indexofinput="2" outputowner="1" indexofoutput="4" />
+                        <Link inputowner="5" indexofinput="2" outputowner="2" indexofoutput="4" />
+                        <Link inputowner="1" indexofinput="2" outputowner="4" indexofoutput="4" />
+                        <Link inputowner="1" indexofinput="2" outputowner="7" indexofoutput="3" />
+                        <Link inputowner="7" indexofinput="2" outputowner="3" indexofoutput="4" />
                     </Diagram>
                 </BehaviorKeyframe>
             </BehaviorLayer>
