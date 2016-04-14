@@ -239,7 +239,7 @@ class MyClass(GeneratedClass):
                 # location at image[x][y]
                 image=np.fromstring(result[6],np.uint8).reshape(480,640,3)
                 #resize image--this makes detecting corners easier
-                image = cv2.resize(image,None,fx=.6,fy=.6,interpolation=cv2.INTER_CUBIC)
+                image = cv2.resize(image,None,fx=.6,fy=.6,interpolation=cv2.INTER_AREA)
 
                 cnt=self.get_largest_contour(image,color[0])
                 shape=""
