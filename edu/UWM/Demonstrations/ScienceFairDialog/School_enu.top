@@ -1,0 +1,78 @@
+topic: ~School()
+language: enu
+
+# Defining needed concepts, keywords or sentences corresponding to a concept.
+concept:(yes) [yes "all right" sure "why not" ok certainly "very well" yep yea definitely amen]
+concept:(no) [no nope "don't want" "no way" never "not at all"]
+concept:(how) ["how are you" howdy "what's up" "how do you feel" "how're you" "how're you doing"]
+concept:(happy) [ok fine great happy blessed "all right" glad "not bad"]
+concept:(sad) [sad miserable bad unhappy tired]
+concept:(repeat) [repeat understand]
+concept:(thx) ["thank you" thanks gracias "much obliged" merci danke]
+concept:(hello) [hello hi hey "good afternoon" greetings ciao hallo]
+concept:(bye) [bye goodbye "bye bye" "tata" "see you" adios cheerio "so long" farewell "have a nice day"]
+concept:(shutoff) ["Nao, turn off" "turn off" "shut off" "shut down"]
+
+# Start/Wait animation, Goto.
+# If User expresses a word or a sentence found in the concept "hello",
+# the robot starts Hey_1 animation, answers a random value defined in concept "hello"
+# and waits for the end of the animation before going to the label how. Label is expressed this way: %howAreYou
+u:(~hello) ^start(animations/Stand/Gestures/Hey_1) ~hello ^wait(animations/Stand/Gestures/Hey_1) ^goto(howAreYou)
+
+# Tag animation.
+# If User asks how the robot feels, it starts a random animation being tagged "myself",
+# answers and go to the label %howAreYou
+u:(~how) ^startTag(myself) I'm fine, thank you. And you, ^goto(howAreYou)
+
+# %Label.
+# The robot asks how the user feels. 3 kind of answers are expected
+# Expressed by concept, user can be happy, sad or ask the robot to repeat the question.
+proposal: %howAreYou ^startTag(show) how are you today?
+    u1:(~happy) I'm glad you are fine! ^goto(favoriteColor)
+    u1:(~sad) Oh, I feel sorry for you. ^nextProposal
+    u1:(~repeat) I'll repeat for you. ^sameProposal
+
+# Output slot stimulation.
+# If User is sad (known from previous question), the robot proposes to play a game.
+# If User accepts, it will stimulate the "playAGame" punctual diagram output.
+proposal: %askaquestion Ask me a question.
+    u1:(~yes) Ok! $askaquestion=1
+    u1:(~no) Ok, see you next time. Bye.
+    u1:(["tell me about"] mercury) ["Mercury is the planet closest to the Sun." "Like all the other planets Mercury orbits round the Sun, but its orbit of the Sun lasts for only 88 days." "Mercury’s sunny side has a temperature rising to 400° Celsius or 750° Fahrenheit."] ^sameProposal
+    u1:(["tell me about"] venus) ["Venus is the brightest planet in the Solar System and can be seen even in daylight if you know where to look." "Venus orbits round the sun in 225 days." "Venus is called after the Roman Goddess of love and beauty." "Venus has no moons."] ^sameProposal    
+    u1:(["tell me about"] earth) ["It is the only planet that has liquid water on its surface." "When viewed from outer space much of the Earth’s surface cannot be seen because of clouds of water vapour." "The Earth is the third planet from the Sun and comes between Venus and Mars."] ^sameProposal    
+    u1:(["tell me about"] mars) ["Mars is the fourth planet from the sun." "A Martian day is 24 hours and 39 minutes long." "Mars is covered by craters from objects like asteroids and meteorites hitting the planet. "] ^sameProposal    
+    u1:(["tell me about"] jupiter) ["Jupiter is made of  hydrogen, helium, methane and ammonia." "The first person to discover and observe Jupiter’s moons was Galileo." "NASA launched Juno, an unmanned spacecraft on August fifth 2011, and it should arrive at Jupiter on July 4 this year"] ^sameProposal    
+    u1:(["tell me about"] saturn) ["Saturn's rings were first seen by Galileo in 1610 through a telescope." "Saturn has at least 18 moons, satellites which orbit round the planet attracted to it by the planet’s gravity." "Saturn is the second largest planet in the Solar System, only Jupiter is bigger." "Saturn is a great ball of hydrogen and helium"] ^sameProposal    
+    u1:(["tell me about"] uranus) ["Uranus was first seen by William Herschel in 1781" "Uranus has a total of 27 moons" "Most of the centre of Uranus is a frozen mass of ammonia and methane, which gives it the blue-green colour."] ^sameProposal    
+    u1:(["tell me about"] neptune) ["Neptune cannot be seen without a large telescope" " It takes Neptune 165 of our Earth years to orbit the Sun." " Neptune has 13 moons in total.  "] ^sameProposal    
+    u1:(["tell me about"] pluto) ["Pluto is known to have four moons" "It is  the largest dwarf planet" "Pluto is one third water, which is in the form of water ice"] ^sameProposal
+    u1:(["When were computers developed?"]) ["Early computers were developed in the nineteen fourties. They were the size of a large room and consumed huge amounts of electricity."] ^sameProposal
+    u1:(["Tell me about"] computers) ["small computers are embedded into other things such as mobile phones, toys, microwaves and MP3 players. There is also a computer in me!" " The first computer mouse ever made was made of wood." "Computers only do what they are told, they cannot think for themselves."] ^sameProposal
+    u1:(["Tell me about"] nao yourself you) ["I am 58 centimeters tall. That is about 23 inches." "I have two cameras that I can see with." "I can connect to the internet." "I first appeared in public in 2008." "Universities can use me to conduct research on many things." "I weight 4.3 kilograms, or 9.5 pounds." ] ^sameProposal
+    u1:(["Tell me a random fact" "tell me something random" "What's a random fact?"]) ["There are no poisonous snakes in Maine." "The poison arrow frogs of South and Central America are the most poisonous animals in the world." "The first coast-to-coast telephone line was established in 1914." "The human eye blinks an average of 4200000 times a year." "It takes approximately 12 hours for food to entirely digest." "Sound travels about 4 times faster in water than in air." "The only letter not appearing on the Periodic Table is the letter J." "	If you stretch a standard Slinky out flat it measures 87 feet long." "Diamonds are the hardest substance known to man." "There is a high and low tide because of our moon and the Sun." "A Boeing 707 uses four thousand gallons of fuel in its take-off climb." "Emus and kangaroos cannot walk backwards." "Tigers have striped skin, not just striped fur." "The human brain is 80% water."] ^sameProposal
+    
+# Variables.
+# the robot asks User for his prefered color between blue and red.
+# this illustrate variables stored in $1 using '_' character.
+proposal: %favoriteColor And what is your favorite color?
+    u1:(red) Red is my prefered color too ! ^goto(askaquestion)
+    u1:(_[blue green yellow pink orange purple white black]) $1 is a very nice color and my prefered is red. ^goto(askaquestion)
+    
+    
+# On any proposal if user asks to repeat, say again the same proposal.
+u:(~repeat) I'll repeat for you. ^sameProposal
+
+# Being polite, the robot always answers accordingly to thankfull sentences.
+u:(~thx) You're welcome
+
+u:(~bye) [Goodbye bye "see you later"]
+
+# Exiting.
+# Answering to Goodbye and exiting the dialog box, stimulating the onStopped output slot.
+u:(~shutoff) Ok, I will shut off. $onStopped=1
+
+# Responding to events.
+# Here, if the left foot bumper is pressed, the robot starts an animation,
+# say a text and waits for the end of the animation.
+u:(e:LeftBumperPressed) ^start(animations/Stand/Gestures/YouKnowWhat_1) My left foot bumped into something! ^wait(animations/Stand/Gestures/YouKnowWhat_1)

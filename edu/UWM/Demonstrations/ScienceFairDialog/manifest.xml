@@ -1,0 +1,26 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<package uuid="robot-705532">
+ <names>
+  <name lang="en_US">Robot</name>
+ </names>
+ <supportedLanguages>
+  <language>en_US</language>
+ </supportedLanguages>
+ <descriptionLanguages>
+  <language>en_US</language>
+ </descriptionLanguages>
+ <contents>
+  <behaviorContent path="behavior_1">
+   <nature>interactive</nature>
+   <triggerSentences/>
+   <loadingResponses/>
+   <autonomous>
+    <condition purpose="launchTrigger"><![CDATA[RightBumperPressed==1]]></condition>
+   </autonomous>
+   <permissions/>
+  </behaviorContent>
+  <dialogContent typeVersion="1.0" topicName="School">
+   <topic path="School/School_enu.top" language="en_US"/>
+  </dialogContent>
+ </contents>
+</package>
