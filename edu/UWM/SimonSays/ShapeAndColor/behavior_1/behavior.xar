@@ -76,49 +76,43 @@ class MyClass(GeneratedClass):
     def onLoad(self):
         #put initialization code here
         self.animatedSpeechProxy=ALProxy("ALAnimatedSpeech")
-        GREEN_LOW=[60,70,70]
-        GREEN_HIGH=[70,255,255]
-        PINK_LOW=[163,100,120]
-        PINK_HIGH=[167,255,255]
-        RED_LOW=[171,143,0]
-        RED_HIGH=[179,255,255]
+        GREEN_LOW=[61,36,21]
+        GREEN_HIGH=[93,191,87]
+        RED_LOW=[0,170,128]
+        RED_HIGH=[179,209,176]
         PURPLE_LOW=[117,51,50]
         PURPLE_HIGH=[128,255,255]
-        YELLOW_LOW=[13,155,77]
-        YELLOW_HIGH=[51,234,239]
-        ORANGE_LOW=[0,152,162]
-        ORANGE_HIGH=[0,179,255]
-        NEON_YELLOW_LOW=[9,96,103]
-        NEON_YELLOW_HIGH=[41,212,255]
-        shapes=('circle','square','rectangle','triangle','pentagon')
+        YELLOW_LOW=[0,175,123]
+        YELLOW_HIGH=[129,205,213]
+        BLUE_LOW=[107,90,55]
+        BLUE_HIGH=[120,240,166]
+        shapes=('square','octagon','triangle','pentagon')
 
         global objectDict
         #put all the color ranges into a single list
-        #objectDict={'green':[GREEN_LOW,GREEN_HIGH],
-               #     'pink':[PINK_LOW,PINK_HIGH],
-                #    'purple':[PURPLE_LOW,PURPLE_HIGH],
-                #    'yellow':[YELLOW_LOW,YELLOW_HIGH],
-                #    'orange':[ORANGE_LOW,ORANGE_HIGH],
-                #    'red':[RED_LOW,RED_HIGH],
-                 #   'neon yellow':[NEON_YELLOW_LOW,NEON_YELLOW_HIGH]}
-        objectDict={'yellow':[YELLOW_LOW,YELLOW_HIGH]}
+        objectDict={'green':[GREEN_LOW,GREEN_HIGH],
+                    'purple':[PURPLE_LOW,PURPLE_HIGH],
+                    'yellow':[YELLOW_LOW,YELLOW_HIGH],
+                    'red':[RED_LOW,RED_HIGH],
+                    'blue':[BLUE_LOW,BLUE_HIGH]}
+        #objectDict={'yellow':[YELLOW_LOW,YELLOW_HIGH]}
 
-        #shapeDict={}
-        #for s in shapes:
-         #   for k in objectDict.keys():
-          #      tmp=objectDict[k]
-           #     tmp.append(k)
-            #    tmp.append(s)
-             #   shapeDict[k+' '+s]=tmp
-      #  objectDict=shapeDict
+        shapeDict={}
+        for s in shapes:
+            for k in objectDict.keys():
+                tmp=objectDict[k]
+                tmp.append(k)
+                tmp.append(s)
+                shapeDict[k+' '+s]=tmp
+        objectDict=shapeDict
 
         self.instructionList=[]
-        #for k in objectDict.keys():
-       #     self.instructionList.append((objectDict[k][2],objectDict[k][3],"Show me the "+k+"."))
-        self.instructionList.append(('yellow','square',"Show me the yellow square."))
-        self.instructionList.append(('yellow','triangle',"Show me the yellow triangle."))
-        self.instructionList.append(('yellow','rectangle',"Show me the yellow rectangle."))
-        self.instructionList.append(('yellow','pentagon',"Show me the yellow pentagon."))
+        for k in objectDict.keys():
+            self.instructionList.append((objectDict[k][2],objectDict[k][3],k,"Show me the "+k+"."))
+        #self.instructionList.append(('yellow','square',"Show me the yellow square."))
+        #self.instructionList.append(('yellow','triangle',"Show me the yellow triangle."))
+        #self.instructionList.append(('yellow','rectangle',"Show me the yellow rectangle."))
+        #self.instructionList.append(('yellow','pentagon',"Show me the yellow pentagon."))
 
     def onUnload(self):
         #put clean-up code here
@@ -129,9 +123,9 @@ class MyClass(GeneratedClass):
         simon=['',"Simon says ",'','',"Simon Says","Simon says", "Simon says"]
         simonSays=random.choice(simon)
         simonSays="Simon says"
-        toSay=simonSays+self.instructionList[i][2]
+        toSay=simonSays+self.instructionList[i][3]
         self.animatedSpeechProxy.say(toSay)
-        toSend=(self.instructionList[i][0],self.instructionList[i][1],True if simonSays=='Simon says' else False)
+        toSend=(self.instructionList[i][0],self.instructionList[i][1],True if simonSays=='Simon says' else False, self.instructionList[i][2])
         self.onStopped(toSend) #activate the output of the box
 
 
@@ -241,7 +235,7 @@ class MyClass(GeneratedClass):
                 #resize image--this makes detecting corners easier
                 image = cv2.resize(image,None,fx=.6,fy=.6,interpolation=cv2.INTER_AREA)
 
-                cnt=self.get_largest_contour(image,color[0])
+                cnt=self.get_largest_contour(image,color[3])
                 shape=""
                 if cnt is not None and cv2.contourArea(cnt)>150:
                     shape=self.get_shape(cnt)
