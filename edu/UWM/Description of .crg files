@@ -1,3 +1,3 @@
-Demonstration --- dialogue with facts about computers, planets, NAO, and other
-Standup --- Nao stands up, waves, wipes its forehead, says hi, waves, and sits back down
-BumperTalk --- various bumpers are programmed to have Nao say which bumper you touched
+Demonstration --- TRIGGER: left bumper --- dialogue with facts about computers, planets, NAO, and other
+Standup --- TRIGGER: left bumper, program ends autonomously --- Nao stands up, waves, wipes its forehead, says hi, waves, and sits back down
+BumperTalk --- TRIGGER: right bumper, touch left hand to end program --- various bumpers are programmed to have Nao say which bumper you touched
