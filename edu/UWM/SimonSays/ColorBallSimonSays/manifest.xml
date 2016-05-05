@@ -12,8 +12,17 @@
  <contents>
   <behaviorContent path="RecognizeColor">
    <nature>interactive</nature>
+   <descriptions>
+    <description lang="en_US">A variation on Simon Says in which NAO asks to see a certain colored object, determines whether the player followed the instruction correctly, and then gives appropriate feedback. </description>
+   </descriptions>
+   <triggerSentences>
+    <sentence lang="en_US">Color Simon Says</sentence>
+   </triggerSentences>
    <permissions/>
   </behaviorContent>
+  <dialogContent typeVersion="1.0" topicName="Introduction">
+   <topic path="Introduction/Introduction_enu.top" language="en_US"/>
+  </dialogContent>
  </contents>
  <requirements>
   <naoqiRequirement maxVersion="2.1.4.13" minVersion="2.1.4.13"/>
