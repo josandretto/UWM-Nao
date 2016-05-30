@@ -1,7 +1,0 @@
-topic: ~Introduction()
-language: enu
-
-u:(hello) Hello, What is your name
-u:(my name is _*) $1 is a nice name! I'm bored, do you want to play a game with me?
-u:(what game) Simon says with colors
-u:(how do we play) I will give an instruction, like show me the orange ball. You should show me the orange ball only if I say Simon Says before asking to see the ball. Let's play! $onStopped=1
